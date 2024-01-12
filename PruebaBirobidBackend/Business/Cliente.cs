@@ -52,10 +52,73 @@ namespace PruebaBirobidBackend.Business
             finally
             {
                 connection.Close();
+            }   
+        }
+        public async Task<object> EditarCliente(ClienteModel cliente)
+        {
+            SqlConnection connection = new(_conexion);
+            connection.Open();
+            var transaction = connection.BeginTransaction();
+
+            try
+            {
+                await connection.ExecuteAsync("SpActualizarCliente",
+                    new
+                    {
+                        cliente.Codigo,
+                        cliente.Nombre,
+                        cliente.Cedula,
+                        cliente.Telefono,
+                        cliente.Celular,
+                        cliente.Correo,
+                        cliente.Genero,
+                        cliente.FechaNacimiento
+                    },
+                    transaction, 20000, commandType: CommandType.StoredProcedure);
+
+                transaction.Commit();
+                return new { status = 200, mensaje = "Cliente Editado" };
             }
-           
-            
-            
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                return new { status = 500, mensaje = $"Error al editar un cliente {ex.Message}" };
+            }
+            finally
+            {
+                connection.Close();
+            }
+
+
+
+        }
+        public async Task<object> EliminarCliente(ClienteModel cliente)
+        {
+            SqlConnection connection = new(_conexion);
+            connection.Open();
+            var transaction = connection.BeginTransaction();
+
+            try
+            {
+                await connection.ExecuteAsync("SpEliminarCliente",
+                    new
+                    {
+                        cliente.Codigo,
+                    },
+                    transaction, 20000, commandType: CommandType.StoredProcedure);
+
+                transaction.Commit();
+                return new { status = 200, mensaje = "Cliente Eliminado" };
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                return new { status = 500, mensaje = $"Error al eliminar un cliente {ex.Message}" };
+            }
+            finally
+            {
+                connection.Close();
+            }
         }
     }
 }

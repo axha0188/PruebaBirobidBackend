@@ -49,5 +49,17 @@ app.MapPost("/api/grabarcliente", async ([FromBody] ClienteModel cliente) => {
     return res;
 });
 
+app.MapPost("/api/editarcliente", async ([FromBody] ClienteModel cliente) => {
+    var clientes = new Cliente();
+    var res = await clientes.EditarCliente(cliente);
+    return res;
+});
+
+app.MapPost("/api/eliminarcliente", async ([FromBody] ClienteModel cliente) => {
+    var clientes = new Cliente();
+    var res = await clientes.EliminarCliente(cliente);
+    return res;
+});
+
 // Configure para ejecutar la aplicación
 app.Run();
